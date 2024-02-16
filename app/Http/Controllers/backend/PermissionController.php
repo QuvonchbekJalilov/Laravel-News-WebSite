@@ -14,27 +14,33 @@ class PermissionController extends Controller
 
     public function index()
     {
-        $this->authorize('viewAny', Permission::class);
+        if (auth()->user()->hasRole('admin')) {
         $permissions = Permission::paginate(20);
 
         $roles = Role::with('permissions')->get();
 
         return view('backend.permissions.index', compact('permissions', 'roles'));
+    } else {
+        return view('auth.errorpage');
+    }
     }
 
 
     public function create()
     {
-        $this->authorize('create', Permission::class);
+        if (auth()->user()->hasRole('admin')) {
         
         $roles = Role::all();
         return view('backend.permissions.create', compact('roles'));
+    } else {
+        return view('auth.errorpage');
+    }
     }
 
 
     public function store(StorePermissionRequest $request)
     {
-        $this->authorize('create', Permission::class);
+        if (auth()->user()->hasRole('admin')) {
         
         // Find the role
         $role = Role::find($request->role);
@@ -48,22 +54,28 @@ class PermissionController extends Controller
         }
 
         return redirect()->back();
+    } else {
+        return view('auth.errorpage');
+    }
     }
 
 
     public function edit(Permission $permission)
     {
-        $this->authorize('update', Permission::class);
+        if (auth()->user()->hasRole('admin')) {
         
         $permission = Permission::find($permission->id);
         $roles = Role::all();
         return view('backend.permissions.edit', compact('permission', 'roles'));
+    } else {
+        return view('auth.errorpage');
+    }
     }
 
 
     public function update(UpdatePermissionRequest $request, Permission $permission)
     {
-        $this->authorize('update', Permission::class);
+        if (auth()->user()->hasRole('admin')) {
         
 
 
@@ -82,15 +94,21 @@ class PermissionController extends Controller
         $permission->save();
 
         return redirect()->back();
+    } else {
+        return view('auth.errorpage');
+    }
     }
 
 
     public function destroy(Permission $permission)
     {
-        $this->authorize('delete', Permission::class);
+        if (auth()->user()->hasRole('admin')) {
         
         $permission->delete();
 
         return redirect()->back();
+    } else {
+        return view('auth.errorpage');
+    }
     }
 }

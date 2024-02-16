@@ -10,71 +10,84 @@ use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
-   
+
 
     public function index()
     {
-        $this->authorize('viewAny', Role::class);
-        
-        $roles = Role::all();
-
-        return view('backend.roles.index', compact('roles'));
+        if (auth()->user()->hasRole('admin')) {
+            $roles = Role::all();
+            return view('backend.roles.index', compact('roles'));
+        } else {
+            return view('auth.errorpage');
+        }
     }
 
 
     public function create()
     {
-        $this->authorize('create', Role::class);
-        
-        return view('backend.roles.create');
+        if (auth()->user()->hasRole('admin')) {
+
+            return view('backend.roles.create');
+        } else {
+            return view('auth.errorpage');
+        }
     }
 
 
     public function store(StoreRoleRequest $request)
     {
-        $this->authorize('create', Role::class);
-        
-        $role = Role::create([
-            'name' => $request->name,
-        ]);
+        if (auth()->user()->hasRole('admin')) {
 
-        return redirect()->route('backend.roles.index');
+            $role = Role::create([
+                'name' => $request->name,
+            ]);
+
+            return redirect()->route('backend.roles.index');
+        } else {
+            return view('auth.errorpage');
+        }
     }
 
 
-    public function show(Role $role)
-    {
-        $this->authorize('view', Role::class);
-    }
+
 
 
     public function edit(Role $role)
     {
-        $this->authorize('update', Role::class);
-        
-        $role = Role::find($role->id);
+        if (auth()->user()->hasRole('admin')) {
 
-        return view('backend.roles.edit', compact('role'));
+            $role = Role::find($role->id);
+
+            return view('backend.roles.edit', compact('role'));
+        } else {
+            return view('auth.errorpage');
+        }
     }
 
 
     public function update(UpdateRoleRequest $request, Role $role)
     {
-        $this->authorize('update', Role::class);
-        
-        $roles = Role::all();
-        $role->update($request->all());
+        if (auth()->user()->hasRole('admin')) {
 
-        return view('backend.roles.index', compact('roles'))->with('success', 'User deleted successfully deleted');
+            $roles = Role::all();
+            $role->update($request->all());
+
+            return view('backend.roles.index', compact('roles'))->with('success', 'User deleted successfully deleted');
+        } else {
+            return view('auth.errorpage');
+        }
     }
 
 
     public function destroy(Role $role)
     {
-        $this->authorize('delete', Role::class);
-        
-        $role->delete();
+        if (auth()->user()->hasRole('admin')) {
 
-        return redirect()->back();
+            $role->delete();
+
+            return redirect()->back();
+        } else {
+            return view('auth.errorpage');
+        }
     }
 }

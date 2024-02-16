@@ -51,6 +51,7 @@ class PostController extends Controller
 
     public function store(StorePostRequest $request, Post $post)
     {
+        
        
         $path = $request->file('photo')->store('post-photos/' . $post->id, 'public');
 
